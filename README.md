@@ -45,15 +45,30 @@ yarn add react-syntax-highlighter
 
     // ... existing code
 
-    return (
-        // ... existing return code
-
-        <div>
-            <ChatBox/>
-        </div>
-
-        // ... existing code
-    );
+   return (
+       <React.Fragment>
+         <DynamicComponent name="ApplicationWrapper">
+           <div className="application-layout-side-menu">
+             <DynamicComponent name="ApplicationDesktopNavbar">
+               <DesktopNavbar />
+             </DynamicComponent>
+           </div>
+           <div>
+             <DynamicComponent name="ApplicationDesktopChat">
+               <ChatBox/>
+             </DynamicComponent>
+           </div>
+           <div className="application-layout-content">
+             <nav className="application-layout-top-menu" ref={mobileNavbarContainerRef}>
+               <DynamicComponent name="ApplicationMobileNavbar" getPopupContainer={getMobileNavbarPopupContainer}>
+                 <MobileNavbar getPopupContainer={getMobileNavbarPopupContainer} />
+               </DynamicComponent>
+             </nav>
+             {children}
+           </div>
+         </DynamicComponent>
+       </React.Fragment>
+     );
     ```
 
     Create a new file `chat.js` in `client/app/services` and add:
