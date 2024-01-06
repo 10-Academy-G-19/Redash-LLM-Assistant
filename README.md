@@ -81,6 +81,3 @@ Before installation, ensure you have the following set up:
     $ make up
     ```
     Access the Redash web interface at http://localhost:5001 for configuration.
-
-### Shutdown
-To stop the containers:
