@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "redash-llm-addon"
+version = "1.0.0"
+description = "Redash LLM Addon development"
+authors = [
+    "A. Biniyam Ajaw <odolbiniyam@gmail.com>"
+]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+openai = "^1.6.1"  
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
