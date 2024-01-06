@@ -1,110 +1,86 @@
-Absolutely! Here's a more structured and organized README for your Redash ChatGPT Plugin project:
-
----
-
 # Redash ChatGPT Plugin
 
-The Redash ChatGPT Plugin integrates natural language conversation capabilities powered by ChatGPT into your Redash dashboard. This plugin enables users to engage in interactive and conversational queries, generating human-like responses and providing data visualization directly within the chat interface.
+## Introduction
+
+The Redash ChatGPT Plugin is an integration designed to incorporate natural language conversation capabilities powered by ChatGPT into the Redash dashboard. This plugin enhances user experience by enabling interactive queries and data visualization directly within the chat interface.
 
 ## Features
 
-- **Conversational Queries:** Users interact with Redash using natural language queries for a more intuitive experience.
-- **Interactive Responses:** ChatGPT generates human-like responses, offering informative and contextual feedback on queries.
-- **Data Visualization:** Visualize query results within the chat interface, allowing faster data exploration and analysis.
+### Conversational Queries
+- Users can engage with Redash using natural language queries, making the process more intuitive and user-friendly.
 
-## Installation
+### Interactive Responses
+- ChatGPT generates human-like responses, providing informative and contextual feedback on user queries.
 
-Before installing the Redash ChatGPT Plugin, ensure you have a Redash instance installed on your local machine by following the [Local Development Setup guide](https://github.com/getredash/redash/wiki/Local-development-setup).
+### Data Visualization
+- The plugin facilitates visualization of query results within the chat interface, streamlining data exploration and analysis.
 
-For more reference and information about Redash, visit [Redash's official website](https://redash.io/).
+## Installation Guide
 
-### Dependencies
+### Prerequisites
 
-Install the necessary dependencies:
+Before installation, ensure you have the following set up:
 
-```bash
-poetry add openai
-yarn add react-icons
-yarn add react-syntax-highlighter
-```
-
-### Integration Steps
-
-1. **Copy Files:**
-
-    Copy the `chat` folder from `client/app/components/chat` to the corresponding location in Redash's `client/app/components` folder.
-
-    Copy the `chat.py` file from `redash/handlers/chat.py` to the corresponding location in Redash's `redash/handlers` folder.
-
-2. **Update Redash Source Code:**
-
-    Modify `client/app/components/ApplicationArea/ApplicationLayout/index.jsx`:
-
-    ```javascript
-    import ChatBox from "@/components/chat/ChatBox";
-
-    // ... existing code
-
-   return (
-       <React.Fragment>
-         <DynamicComponent name="ApplicationWrapper">
-           <div className="application-layout-side-menu">
-             <DynamicComponent name="ApplicationDesktopNavbar">
-               <DesktopNavbar />
-             </DynamicComponent>
-           </div>
-           <div>
-             <DynamicComponent name="ApplicationDesktopChat">
-               <ChatBox/>
-             </DynamicComponent>
-           </div>
-           <div className="application-layout-content">
-             <nav className="application-layout-top-menu" ref={mobileNavbarContainerRef}>
-               <DynamicComponent name="ApplicationMobileNavbar" getPopupContainer={getMobileNavbarPopupContainer}>
-                 <MobileNavbar getPopupContainer={getMobileNavbarPopupContainer} />
-               </DynamicComponent>
-             </nav>
-             {children}
-           </div>
-         </DynamicComponent>
-       </React.Fragment>
-     );
+#### Local Development Setup
+1. Install required packages:
+    ```
+    $ sudo apt -y install docker.io docker-buildx docker-compose-v2
+    $ sudo apt -y install build-essential curl docker-compose pwgen python3-venv xvfb
     ```
 
-    Create a new file `chat.js` in `client/app/services` and add:
-
-    ```javascript
-    import { axios } from "@/services/axios";
-
-    const Chat = {
-        openai: data => axios.post('api/chat', data),
-    };
-
-    export default Chat;
+2. Add your user to the "docker" group:
+    ```
+    $ sudo usermod -aG docker $USER
     ```
 
-    Update `redash/handlers/api.py`:
-
-    ```python
-    from redash.handlers.chat import ChatResource
-
-    api.add_org_resource(ChatResource, "/api/chat", endpoint="chat")
+3. Install Node Version Manager (NVM) and NodeJS version 16:
+    ```
+    $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+    $ nvm install --lts 16
+    $ nvm alias default 16
+    $ nvm use 16
     ```
 
-3. **Environment Configuration:**
+4. Install Yarn 1.x:
+    ```
+    $ npm install --global yarn@1.22.19
+    ```
 
+#### Installation Steps
+
+5. Clone the Redash source code and install NodeJS dependencies:
+    ```
+    $ git clone https://github.com/birehan/Redash-NLP-Chatbot-Analytics
+    $ cd redash
+    $ yarn
+    ```
+
+6. Generate your local environment variables file (`.env`):
+    ```
+    $ make env
+    ```
     Add your OpenAI API key to the `.env` file:
-
     ```
     OPENAI_API_KEY=*****************************************
     ```
 
-4. **Rebuild Your Redash Instance:**
+7. Compile and build:
+    ```
+    $ make build
+    $ make compose_build
+    ```
 
-    After making the necessary modifications, rebuild your Redash instance.
+8. Verify the local docker images:
+    ```
+    $ docker image list
+    ```
 
-You're now ready to engage in insightful conversations with AI directly within your Redash dashboard!
+9. Start Redash locally:
+    ```
+    $ make create_database
+    $ make up
+    ```
+    Access the Redash web interface at http://localhost:5001 for configuration.
 
----
-
-This structured README provides clear installation instructions, dependencies, and integration steps required to incorporate the Redash ChatGPT Plugin into a Redash instance. Adjustments can be made to clarify any specific details or add further explanation as needed for users to successfully implement the plugin.
+### Shutdown
+To stop the containers:
