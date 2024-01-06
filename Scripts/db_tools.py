@@ -19,61 +19,63 @@ def run_query (connection_details: dict, query: str) -> None:
         conn.close()
         return 1
     
+# Inside fill_db() function
 def fill_db(connection_details: dict, df: pd.DataFrame, table_name: str) -> None:
-    """
-    Fill the database with the given data.
-    """
+    engine = None
     try:
-        db_url = f"postgresql://{connection_details['user']}:{connection_details['password']}@{connection_details['host']}:{connection_details['port']}/{connection_details['dbname']}"
-        engine = create_engine(db_url)
-        df.to_sql(table_name, engine, if_exists='replace', index=False)
+        db_url = f"postgresql+psycopg2://{connection_details['user']}:{connection_details['password']}@{connection_details['host']}:{connection_details['port']}/{connection_details['database']}"
+        engine = create_engine(db_url, echo=False)
+        print(f"DB URL: {db_url}")
 
+        # Insert DataFrame into the database
+        df.to_sql(name=table_name, con=engine, if_exists='replace', index=False)
+        print(f"Inserted {len(df)} rows into the database table {table_name}.")
 
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-        return 1
-    
+        # Log information
+        print(f"Inserted data:\n{df.head()}")
+
+    except Exception as e:
+        # Log the error
+        print(f"Error inserting data into the database: {e}")
+
     finally:
         if engine:
             engine.dispose()
 
-    return None
+
 
 
 def create_table_query(df: pd.DataFrame, table_name: str) -> str:
-    """
-    Create a SQL query to create a table in the database.
-    """
-    # columns = list(df.columns)
-    # columns = [f"{column} VARCHAR(255)" for column in columns]
-    # columns = ", ".join(columns)
-    # query = f"CREATE TABLE IF NOT EXISTS {table_name} ({columns});"
-    # return query
+    try:
+        # Dictionary to map column names to PostgreSQL data types
+        data_type_mapping = {
+            'int64': 'INTEGER',
+            'float64': 'DOUBLE PRECISION',
+            'object': 'TEXT',
+            'datetime64[ns]': 'DATE'  # Explicitly add datetime type
+        }
 
-    dtype_mapping = {
-        'object': 'TEXT',
-        'int64': 'INTEGER',
-        'float64': 'REAL',
-        'datetime64': 'TIMESTAMP'
-    }
+        # Generate column definitions for the CREATE TABLE query
+        column_definitions = ',\n    '.join([f'"{column}" {data_type_mapping.get(str(df[column].dtype), "TEXT")}' for column in df.columns])
 
-    # Generate column definitions for the CREATE TABLE query
-    column_definitions = ', '.join([f'"{column}" {dtype_mapping.get(str(df[column].dtype), "TEXT")}' for column in df.columns])
+        # Determine the primary key based on the data types
+        primary_key_columns = ['"' + df.columns[0] + '"']
 
-    primary_key_cols = ['"' + df.columns[0] + '"']
+        if table_name in ['viewership_by_date_table_data', "totals_table_data"]:
+            primary_key_columns = ['"' + df.columns[0] + '"']
+        elif df.columns[0] == "Date":
+            primary_key_columns.append('"' + df.columns[1] + '"')
 
-    if table_name in [
-        'viewership_by_date_table_data',
-        'totals_table_data'
-    ]:
-        primary_key_cols = ['"' + df.columns[0] + '"']
+        # Create the primary key constraint
+        primary_key_constraint = f'PRIMARY KEY ({", ".join(primary_key_columns)})'
 
-    elif df.columns[0] == "Date":
-        primary_key_cols.append('"' + df.columns[1] + '"')
+        # Create the full CREATE TABLE query
+        create_table_query = f'''CREATE TABLE IF NOT EXISTS "{table_name}" ({column_definitions},{primary_key_constraint});'''
+        
+        return create_table_query
 
-    primary_key_constraint = f'PRIMARY KEY ({", ".join(primary_key_cols)})'
-
-    query = f'CREATE TABLE IF NOT EXISTS "{table_name}" ({column_definitions}, {primary_key_constraint});'
-
-    return query
+    except Exception as e:
+        # Log the error
+        print(f"Error creating table query: {e}")
+        return ''
 
