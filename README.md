@@ -4,15 +4,15 @@
 
 The Redash ChatGPT Plugin is an integration designed to incorporate natural language conversation capabilities powered by ChatGPT into the Redash dashboard. This plugin enhances user experience by enabling interactive queries and data visualization directly within the chat interface.
 
-## Features
+## Features of the plugin
 
-### Conversational Queries
+### Query Conversation
 - Users can engage with Redash using natural language queries, making the process more intuitive and user-friendly.
 
-### Interactive Responses
+### Quick and Interactive Responses
 - ChatGPT generates human-like responses, providing informative and contextual feedback on user queries.
 
-### Data Visualization
+### Data Analysis
 - The plugin facilitates visualization of query results within the chat interface, streamlining data exploration and analysis.
 
 ## Installation Guide
